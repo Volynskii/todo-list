@@ -20,7 +20,7 @@ interface TodoItemsState {
 
 interface TodoItemsAction {
     type: 'loadState' | 'add' | 'delete' | 'toggleDone' | 'edit';
-    data: any;
+    data: any
 }
 
 const TodoItemsContext = createContext<
