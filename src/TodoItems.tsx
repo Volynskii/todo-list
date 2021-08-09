@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback,useState } from 'react';
 import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardContent from '@material-ui/core/CardContent';
@@ -11,6 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import { motion } from 'framer-motion';
 import { TodoItem, useTodoItems } from './TodoItemsContext';
+import {debounce} from "./debounce";
 
 const spring = {
     type: 'spring',
@@ -26,6 +27,16 @@ const useTodoItemListStyles = makeStyles({
     },
 });
 
+const useTodoSearch = makeStyles({
+    root: {
+        fontSize: '20px',
+        padding: 0,
+        margin: 0,
+        marginTop: '20px',
+        width: '100%',
+        height: '30px'
+    },
+});
 export const TodoItemsList = function () {
     const { todoItems } = useTodoItems();
 
@@ -42,15 +53,30 @@ export const TodoItemsList = function () {
 
         return 0;
     });
-
+    const [searchValue,setSearchValue] = useState('');
+    const handleChange = debounce((e: { target: { value: string; }; }) => {
+        const {value} = e.target;
+        setSearchValue(value)
+    },500);
+    const classesSearch = useTodoSearch();
     return (
-        <ul className={classes.root}>
-            {sortedItems.map((item) => (
-                <motion.li key={item.id} transition={spring} layout={true}>
-                    <TodoItemCard item={item} />
-                </motion.li>
-            ))}
-        </ul>
+        <>
+            <input placeholder={"Search by tag"} className={classesSearch.root} type="text"  onChange={handleChange}/>
+            <ul className={classes.root}>
+                {sortedItems.filter((val) =>{
+                    if(searchValue === '') {
+                        return val
+                    }
+                    else if(val.tags.toLowerCase().includes(searchValue.toLowerCase())) {
+                        return val
+                    }
+                }).map((item) => (
+                    <motion.li key={item.id} transition={spring} layout={true}>
+                        <TodoItemCard item={item}  />
+                    </motion.li>
+                ))}
+            </ul>
+        </>
     );
 };
 
@@ -82,8 +108,8 @@ export const TodoItemCard = function ({ item }: { item: TodoItem }) {
             }),
         [item.id, dispatch],
     );
-
     return (
+        <>
         <Card
             className={classnames(classes.root, {
                 [classes.doneRoot]: item.done,
@@ -116,6 +142,14 @@ export const TodoItemCard = function ({ item }: { item: TodoItem }) {
                     </Typography>
                 </CardContent>
             ) : null}
+            {item.tags ? (
+                <CardContent>
+                    <Typography variant="body2" component="p">
+                        {item.tags.split(',').map((tag: any) => `#${tag}`)}
+                    </Typography>
+                </CardContent>
+            ) : null}
         </Card>
+        </>
     );
 };

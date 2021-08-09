@@ -19,7 +19,7 @@ export default function TodoItemForm() {
         <form
             onSubmit={handleSubmit((formData) => {
                 dispatch({ type: 'add', data: { todoItem: formData } });
-                reset({ title: '', details: '' });
+                reset({ title: '', details: '', tags: '' });
             })}
         >
             <Controller
@@ -50,11 +50,26 @@ export default function TodoItemForm() {
                     />
                 )}
             />
+            <Controller
+                name="tags"
+                control={control}
+                defaultValue={''}
+                rules={{ required: true }}
+                render={({ field }) => (
+                    <TextField
+                        {...field}
+                        label="Tags"
+                        fullWidth={true}
+                        multiline={true}
+                        className={classes.root}
+                    />
+                )}
+            />
             <Button
                 variant="contained"
                 color="primary"
                 type="submit"
-                disabled={!watch('title')}
+                disabled={!watch('title') || !watch('tags')}
             >
                 Add
             </Button>

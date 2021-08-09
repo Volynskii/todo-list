@@ -7,6 +7,7 @@ import {
 } from 'react';
 
 export interface TodoItem {
+    tags: string;
     id: string;
     title: string;
     details?: string;
