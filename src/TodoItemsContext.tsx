@@ -73,7 +73,8 @@ export const useTodoItems = () => {
 function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
     switch (action.type) {
         case 'loadState': {
-            return action.data;
+            const savedState = localStorage.getItem('todoListState');
+            return  JSON.parse(savedState as string)
         }
         case 'add':
             return {

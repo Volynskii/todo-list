@@ -1,10 +1,10 @@
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { ThemeProvider } from '@material-ui/styles';
 import { TodoItemsList } from './TodoItems';
-import { TodoItemsContextProvider } from './TodoItemsContext';
+import { TodoItemsContextProvider, useTodoItems } from './TodoItemsContext';
 import TodoItemForm from './TodoItemForm';
 
 const theme = createMuiTheme({
@@ -30,6 +30,18 @@ function App() {
 
 function Content() {
     const [currentId,setCurrentId] = useState("");
+    const {dispatch} = useTodoItems();
+
+    useEffect(()=> {
+        const onStorage = (e: any) => {
+            if (e.storageArea !== localStorage) return;
+            if (e.key === 'todoListState') {
+                dispatch({ type: 'loadState', data: null });
+            }
+        };
+        window.addEventListener('storage', onStorage);
+        return () => document.removeEventListener('storage', onStorage);
+    });
     return (
         <Container maxWidth="sm">
             <header>
