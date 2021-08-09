@@ -1,3 +1,4 @@
+import {useEffect} from "react";
 import { useTodoItems } from './TodoItemsContext';
 import { useForm, Controller } from 'react-hook-form';
 import TextField from '@material-ui/core/TextField';
@@ -10,16 +11,32 @@ const useInputStyles = makeStyles(() => ({
     },
 }));
 
-export default function TodoItemForm() {
+export default function TodoItemForm({currentId, setCurrentId}: {currentId: string,setCurrentId: any}) {
     const classes = useInputStyles();
-    const { dispatch } = useTodoItems();
-    const { control, handleSubmit, reset, watch } = useForm();
-
+    const { todoItems,dispatch } = useTodoItems();
+    const { control, handleSubmit, reset, watch,setValue } = useForm();
+    const foundItemData = todoItems.find((todo) => todo.id === currentId);
+    useEffect(()=>{
+        if(currentId) {
+            setValue("title", foundItemData?.title);
+            setValue("details", foundItemData?.details);
+            setValue("tags", foundItemData?.tags);
+        }
+    },[currentId,foundItemData,setValue]);
     return (
         <form
             onSubmit={handleSubmit((formData) => {
-                dispatch({ type: 'add', data: { todoItem: formData } });
-                reset({ title: '', details: '', tags: '' });
+                if (!!foundItemData) {
+                    foundItemData.title =  formData.title;
+                    foundItemData.details = formData.details;
+                    foundItemData.tags = formData.tags;
+                    dispatch({ type: 'edit', data: { todoItem: foundItemData } });
+                    setCurrentId('');
+                    reset({ title: '', details: '',tags: '' });
+                }
+                else
+                    dispatch({ type: 'add', data: { todoItem: formData } });
+                reset({ title: '', details: '',tags: '' });
             })}
         >
             <Controller
@@ -71,7 +88,7 @@ export default function TodoItemForm() {
                 type="submit"
                 disabled={!watch('title') || !watch('tags')}
             >
-                Add
+                {currentId ? 'Edit': 'Add'}
             </Button>
         </form>
     );

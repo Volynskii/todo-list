@@ -19,7 +19,7 @@ interface TodoItemsState {
 }
 
 interface TodoItemsAction {
-    type: 'loadState' | 'add' | 'delete' | 'toggleDone';
+    type: 'loadState' | 'add' | 'delete' | 'toggleDone' | 'edit';
     data: any;
 }
 
@@ -103,6 +103,13 @@ function todoItemsReducer(state: TodoItemsState, action: TodoItemsAction) {
                     { ...item, done: !item.done },
                     ...state.todoItems.slice(itemIndex + 1),
                 ],
+            };
+        case 'edit':
+            const index = state.todoItems.indexOf(action.data.todoItem);
+            return {
+                ...state,
+                todoItems:
+                    Array.from( new Set([...state.todoItems, state.todoItems[index] = action.data.todoItem]))
             };
         default:
             throw new Error();

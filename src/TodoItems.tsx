@@ -7,6 +7,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import DeleteIcon from '@material-ui/icons/Delete';
+import EditIcon from '@material-ui/icons/Edit';
 import { makeStyles } from '@material-ui/core/styles';
 import classnames from 'classnames';
 import { motion } from 'framer-motion';
@@ -37,7 +38,7 @@ const useTodoSearch = makeStyles({
         height: '30px'
     },
 });
-export const TodoItemsList = function () {
+export const TodoItemsList = function ({currentId,setCurrentId}: {currentId: any,setCurrentId: any}) {
     const { todoItems } = useTodoItems();
 
     const classes = useTodoItemListStyles();
@@ -72,7 +73,7 @@ export const TodoItemsList = function () {
                     }
                 }).map((item) => (
                     <motion.li key={item.id} transition={spring} layout={true}>
-                        <TodoItemCard item={item}  />
+                        <TodoItemCard item={item} currentId={currentId}  setCurrentId={setCurrentId}  />
                     </motion.li>
                 ))}
             </ul>
@@ -91,7 +92,8 @@ const useTodoItemCardStyles = makeStyles({
     },
 });
 
-export const TodoItemCard = function ({ item }: { item: TodoItem }) {
+export const TodoItemCard = function ({ item,currentId, setCurrentId }:
+                                          { item: TodoItem,currentId: any,setCurrentId: any }) {
     const classes = useTodoItemCardStyles();
     const { dispatch } = useTodoItems();
 
@@ -117,9 +119,14 @@ export const TodoItemCard = function ({ item }: { item: TodoItem }) {
         >
             <CardHeader
                 action={
-                    <IconButton aria-label="delete" onClick={handleDelete}>
-                        <DeleteIcon />
-                    </IconButton>
+                    <>
+                        <IconButton aria-label="delete" onClick={()=>setCurrentId(item.id)}>
+                            <EditIcon style={item.id === currentId ? {color: 'red'}: {}}/>
+                        </IconButton>
+                        <IconButton aria-label="delete" onClick={handleDelete}>
+                            <DeleteIcon />
+                        </IconButton>
+                    </>
                 }
                 title={
                     <FormControlLabel

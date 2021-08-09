@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { createMuiTheme } from '@material-ui/core/styles';
@@ -29,6 +29,7 @@ function App() {
 }
 
 function Content() {
+    const [currentId,setCurrentId] = useState("");
     return (
         <Container maxWidth="sm">
             <header>
@@ -37,8 +38,8 @@ function Content() {
                 </Typography>
             </header>
             <main>
-                <TodoItemForm />
-                <TodoItemsList />
+                <TodoItemForm currentId={currentId} setCurrentId={setCurrentId} />
+                <TodoItemsList currentId={currentId} setCurrentId={setCurrentId} />
             </main>
         </Container>
     );
